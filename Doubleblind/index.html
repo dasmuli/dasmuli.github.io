@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <!-- Basic Page Needs
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta charset="utf-8">
+  <title>Doubleblind Tabletop App</title>
+  <meta name="Fog of war of double blind app for some wargame tabletop game rules" content="">
+  <meta name="dasmuli" content="">
+
+  <!-- Mobile Specific Metas
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- FONT
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
+
+  <!-- CSS
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/doubleblind.css">
+
+  <!-- Favicon
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  
+  <!-- PWA
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+  <link rel="manifest" href="manifest.webmanifest">
+
+</head>
+<body>
+
+  <!-- Primary Page Layout
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+		
+  <div class="container"  id="MapView">
+    <div class="row"  id="BasicHelp">
+      <div class="column" style="margin-top: 5%">
+        <h4>Using</h4>
+		<p>Click on 42th TN and move the unit down.</p>
+        <p>The 42th as well as the 84th and 95th NY regiments are revealed and placed on the tabletop now. Hit back and click on map view: Union in the main menu to see the other army.</p>
+		<p>The idea is that after both sides moved their units using this app (passing the device played on), the revealed units are moved using some tabletop rules. That's it.</p>
+      </div>
+	</div>
+	
+	<div class="row">
+      <div>
+        <svg viewBox="0 0 140 100"  id="SVGMap">
+		<defs>
+		  <pattern id="patternWoods"
+				   x="1" y="1" width="2" height="2"
+				   patternUnits="userSpaceOnUse" >
+			  <circle cx="1" cy="1" r="1" style="stroke: none; fill: #ccff99" />
+		  </pattern>
+		  <pattern id="patternBuildings"
+				   x="0" y="0" width="8" height="9"
+				   patternUnits="userSpaceOnUse" >
+			  <rect cx="1" cy="1" width="2" height="1" style="stroke: none; fill: #cc6600" />
+			  <rect cx="3" cy="2" width="1" height="2" style="stroke: none; fill: #cc6600" />
+		  </pattern>
+		  <pattern id="patternHills"
+				   x="0" y="0" width="10" height="10"
+				   patternUnits="userSpaceOnUse" >
+			  <ellipse  cx="5" cy="5" rx="3.5" ry="2.5"
+			  stroke="black" fill="#ffe6cc" stroke-width="0.2" />
+		  </pattern>
+		</defs>
+		<g id="mainMapContent"></g>
+		</svg>
+      </div>
+	</div>
+	<div class="row">
+      <div class="one-half column">
+        <button onclick="UIController.MapViewBackButton()">Back</button>
+      </div>
+	  <div class="one-half column" id="toggleRevealedButton">
+        <button onclick="UIController.toggleRevealedOnly()">
+		Revealed only</button>
+      </div>
+	</div>
+  </div>
+  
+  
+  <div class="container" id="MainMenu">
+    <div class="row"  style="margin-top: 5%">
+      <div>
+        <h4>Main menu</h4>
+	  </div>
+    </div>
+	<div class="row">
+      <div class="one-half column">
+	    <p id="MainMenuScenarioName">McPherson Ridge</p>
+	  </div>
+	  <div class="one-half column">
+	    <p id="MainMenuScenarioDescription">The initial phase of Gettysburg.</p>
+	  </div>
+    </div>
+	<div class="row">
+      <div class="one-half column">
+	    Hand over to the other side.
+	  </div>
+	  <div class="one-half column">
+	    <p id="LastMoveIndicator">Last move: Confederates</p>
+	  </div>
+    </div>
+	<div class="row">
+	  <div class="one-half column">
+		<button onclick="UIController.showMap(0)" id="faction0MapViewButton">Map view: Union</button>
+	  </div>
+	  <div class="one-half column">
+		<button onclick="UIController.showMap(1)" id="faction1MapViewButton">Map view: Confederates</button>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="one-half column">
+		<button onclick="UIController.showMapRevealed()" id="faction1MapViewButton">Map view: Revealed</button>
+	  </div>
+	</div>
+	<div class="row" style="margin-top: 7%">
+	  <div class="one-half column">
+		<button onclick="UIController.showEditWarning()">Edit game</button>
+	  </div>
+	  <div class="one-half column">
+		<button onclick="UIController.showAbout()">About</button>
+	  </div>
+	</div>
+	<div class="row" style="margin-top: 7%">
+	  <div class="one-half column">
+	    <button onclick="UIController.load()">Load scenario</button>
+		<input type="file" id="fileInput" accept=".scn" style="display: none;">
+	  </div>
+	  <div class="one-half column">
+		<button onclick="UIController.download('scenario.scn')">Save scenario</button>
+	  </div>
+	</div>
+  </div>
+  
+  
+  <div class="container" id="EditView">
+    <form onsubmit="UIController.updateScenario(); return false;">  <div class="row"  style="margin-top: 5%">
+		<div class="one-half column">
+          <label for="ScenarioName">Scenario name</label>
+          <input class="u-full-width" id="ScenarioName" value="McPherson Ridge">
+        </div>
+		<div class="one-half column">
+          <label for="ScenarioDescription">Scenario description</label>
+          <textarea class="u-full-width" rows = "5" name = "ScenarioDescription"  id="ScenarioDescription">Enter details here...
+         </textarea>
+        </div>
+	  </div>
+	  <div class="row">
+        <div class="one-half column">
+          <label for="Faction0Name">Faction 1</label>
+          <input class="u-full-width" id="Faction0Name" value="Union" />
+        </div>
+        <div class="one-half column">
+          <label for="Faction1Name">Faction 2</label>
+          <input class="u-full-width" id="Faction1Name" value="Confederates" />
+        </div>
+	  </div>
+	  <div class="row"  style="margin-top: 5%">
+		<div class="one-half column">
+          <label for="ScenarioWidth">Map width</label>
+          <input class="u-full-width" id="ScenarioWidth" value="12" min="4" max="40" type="number" required>
+        </div>
+		<div class="one-half column">
+          <label for="ScenarioHeight">Map Height</label>
+          <input class="u-full-width" id="ScenarioHeight" value="8" min="4" max="40"  type="number" required>
+        </div>
+	  </div>
+	  <div class="row">
+		<div class="one-half column">
+          <input class="button" type="submit" value="Update">
+        </div>
+	  </div>
+	</form>
+    <div class="row" id="UnitList">
+      <div class="one-half column">
+        <table class="u-full-width">
+		  <thead>
+			<tr>
+			  <th id="faction0Header">Union units</th>
+			  <th>Description</th>
+			</tr>
+		  </thead>
+		  <tbody id="UnitListTableFaction0">
+		  </tbody>
+		</table>
+		
+		<template id="UnitListTemplate">
+		  <tr>
+			  <td>Unit name</td>
+			  <td>Description</td>
+		  </tr>
+		</template> 
+
+      </div>
+	  <div class="one-half column">
+        <table class="u-full-width">
+		  <thead>
+			<tr>
+			  <th id="faction1Header">Confederates units</th>
+			  <th>Description</th>
+			</tr>
+		  </thead>
+		  <tbody id="UnitListTableFaction1">
+		  </tbody>
+		</table>
+      </div>
+    </div> 
+	  <div class="row"  style="margin-top: 5%">
+        <div class="one-half column">
+          <label for="UnitName">Unit name</label>
+          <input class="u-full-width" id="UnitName">
+        </div>
+	    <div class="one-half column">
+          <label for="UnitName">Unit description</label>
+          <input class="u-full-width" id="UnitDescription">
+        </div>
+      </div>
+	  <div class="row">
+        <div class="one-half column">
+		  <label for="faction0" id="faction0Radio">Union</label>
+	      <input type="radio" id="faction0" name="factionRadio" value="faction">
+		</div>
+        <div class="one-half column">
+		  <label for="faction1" id="faction1Radio">Confederates</label>
+          <input type="radio" id="faction1" name="factionRadio" value="faction">
+	    </div>
+	  </div>
+	  <div class="row">
+		  <div   class="three columns">
+			<button onclick="UIController.editNextUnit()">Next unit</button>
+		  </div>
+		  <div   class="three columns">
+			<button onclick="UIController.selectPosition()">Set position</button>
+		  </div>
+          <div class="three columns">
+            <button onclick="UIController.updateUnitEdited()">Update unit</button>
+          </div>
+	      <div   class="three columns">
+            <button onclick="UIController.addUnitEditedAsNew()">Add as new</button>
+          </div>
+	  </div>
+	<div class="row">
+      <div   class="three columns">
+        <button onclick="UIController.deleteUnitEdited()">Delete unit</button>
+      </div>
+	  <div   class="three columns">
+        <button onclick="UIController.showAllMap()">Show map</button>
+      </div>
+	  <div   class="one-half column">
+        <button onclick="UIController.showMainMenu()">Main menu</button>
+      </div>
+	</div>
+	<div class="row">
+      <div>
+	    <h4>Terrain</h4>
+	  </div>
+	</div>
+	<div class="row">
+      <div   class="three columns">
+        <button onclick="UIController.addWoods()">Woods</button>
+      </div>
+	  <div   class="three columns">
+        <button onclick="UIController.addBuildings()">Buildings</button>
+      </div>
+	  <div   class="three columns">
+        <button onclick="UIController.addHills()">Hills</button>
+      </div>
+	  <div   class="three columns">
+        <button onclick="UIController.clearTerrain()">Clear</button>
+      </div>
+	</div>
+  </div>
+  
+  
+  <div class="container" id="EditWarning">
+    <div class="row"  style="margin-top: 5%">
+      <div class="one-half column">
+        <h4>Edit warning</h4>
+		<p>Do you really want to see all units? This will
+		uncover everything - no more uncertainty.</p>
+	  </div>
+    </div>
+	<div class="row">
+	   <div class="one-half column">
+			<button onclick="UIController.showMainMenu()">Back</button>
+		  </div>
+		  <div class="one-half column">
+			<button onclick="UIController.showEdit()">Edit now!</button>
+		  </div>
+		</div>
+  </div>
+  
+  
+  <div class="container" id="About">
+    <div class="row" style="margin-top: 5%">
+	   <div class="one-half column">
+	        <h4>Idea</h4>
+			<p>The idea of this app is to allow hidden movement
+			in a tabletop game. Each faction moves their units
+			and at the end of a round, units are placed on the
+			table and some tabletop rules
+			are used to handle onboard action.</p>
+	   </div>
+	   <div class="one-half column">
+	        <h4>Freedom</h4>
+			<p>You have to decide yourself how to use this app.
+			You can for example play two rounds with the app
+			in order to simulate faster movement of non engaged
+			units. The offboard box may contain reinforcements
+			or removed units. When moving units from the offmap
+			box to the map you may have to follow your scenario
+			specific rules. When moving onboard units you may have
+			to update a unit's position in the app next round.</p>
+	   </div>
+	</div>
+	 <div class="row" style="margin-top: 5%">
+	   <div class="one-half column">
+	        <h4>Rules</h4>
+			<ul>
+             <li>Each unit only moves one space per round. </li>
+			 <li>Terrain does not restrict movement.</li>
+			 <li>Movement is reset when
+			the other faction starts moving.</li>
+			 <li>Units are concidered
+			revealed when they are adjacent.</li>
+			</ul>
+	   </div>
+	   <div class="one-half column">
+	   </div>
+	</div>
+    <div class="row"  style="margin-top: 5%" id="installationHint">
+      <div class="one-half column">
+		<p>This HTML page can be intalled to a local device
+		- it does not require an internet connection except
+		for the initial load. That can be prevented by installing
+		it like a normal app.</p>
+	  </div>
+	  <div class="one-half column">
+        <button id="installButton">Install</button>
+	  </div>
+    </div>
+	<div class="row" style="margin-top: 5%">
+	   <div class="one-half column">
+			<button onclick="UIController.showMainMenu()">Back</button>
+	   </div>
+	</div>
+  </div>
+  
+  
+  <div class="container" id="MapViewWarning">
+    <div class="row"  style="margin-top: 5%">
+      <div class="one-half column">
+        <h4>Map warning</h4>
+		<p id="MapWarningText">Do you really want to see all units?</p>
+	  </div>
+    </div>
+	<div class="row">
+	   <div class="one-half column">
+			<button onclick="UIController.showMainMenu()">Back</button>
+		  </div>
+		  <div class="one-half column">
+			<button onclick="UIController.showMapNow()">Proceed</button>
+		  </div>
+		</div>
+  </div>
+  
+  
+<script src="js/doubleblind.js"></script>
+<!-- End Document
+  –––––––––––––––––––––––––––––––––––––––––––––––––– -->
+</body>
+</html>
